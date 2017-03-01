@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+    <title>gispace plot4ol3 V1.0.1</title>
+    <link rel="stylesheet" href="css/ol.css">
+    <link rel="stylesheet" href="css/p-ol3.min.css">
+    <link rel="stylesheet" href="css/defaults.css">
+    <link rel="stylesheet" href="css/jquery.Jcrop.css">
+</head>
+<body onload="init()">
+<div id="map"></div>
+<div id="header">
+    <div id="logoandtitle">OL动态标绘|<span id="save">保存</span>|<span id="save1">保存</span>|<span id="toArea">返回视角</span></div>
+</div>
+<div id="menu">
+    <div>
+        点标
+        <button type="button" onclick="activate(P.PlotTypes.MARKER)">点</button>
+        <button type="button" onclick="OverlayLabels('word')">文字标注</button>
+        <button type="button" onclick="OverlayLabels('flag')">旗标</button>
+    </div>
+    <div>
+        线标
+        <button type="button" onclick="activate(P.PlotTypes.ARC)">弧线</button>
+        <button type="button" onclick="activate(P.PlotTypes.CURVE)">曲线</button>
+        <button type="button" onclick="activate(P.PlotTypes.POLYLINE)">折线</button>
+        <button type="button" onclick="activate(P.PlotTypes.FREEHAND_LINE)">自由线</button>
+    </div>
+    <div>
+        面标
+        <button type="button" onclick="activate(P.PlotTypes.CIRCLE)">圆</button>
+        <button type="button" onclick="activate(P.PlotTypes.ELLIPSE)">椭圆</button>
+        <button type="button" onclick="activate(P.PlotTypes.LUNE)">弓形</button>
+        <button type="button" onclick="activate(P.PlotTypes.SECTOR)">扇形</button>
+        <button type="button" onclick="activate(P.PlotTypes.CLOSED_CURVE)">曲线面</button>
+        <button type="button" onclick="activate(P.PlotTypes.POLYGON)">多边形</button>
+        <button type="button" onclick="activate(P.PlotTypes.RECTANGLE)">矩形</button>
+        <button type="button" onclick="activate(P.PlotTypes.FREEHAND_POLYGON)">自由面</button>
+        <button type="button" onclick="activate(P.PlotTypes.GATHERING_PLACE)">聚集地</button>
+    </div>
+    <div>
+        箭头
+        <!--<button type="button" onclick="activate(P.PlotTypes.DOUBLE_ARROW)">钳击</button>-->
+        <button type="button" onclick="activate(P.PlotTypes.STRAIGHT_ARROW)">直箭头</button>
+        <button type="button" onclick="activate(P.PlotTypes.FINE_ARROW)">细直箭头</button>
+        <!--<button type="button" onclick="activate(P.PlotTypes.ASSAULT_DIRECTION)">突击方向</button>-->
+        <!--<button type="button" onclick="activate(P.PlotTypes.ATTACK_ARROW)">进攻方向</button>-->
+        <!--<button type="button" onclick="activate(P.PlotTypes.TAILED_ATTACK_ARROW)">进攻方向（尾）</button>-->
+        <!--<button type="button" onclick="activate(P.PlotTypes.SQUAD_COMBAT)">分队战斗行动</button>-->
+        <!--<button type="button" onclick="activate(P.PlotTypes.TAILED_SQUAD_COMBAT)">分队战斗行动（尾）</button>-->
+    </div>
+</div>
+<div id="aboutContainer">
+    <div id="aboutTitle">关于...<span id="closeBtn" onclick="hideAbout()">X</span></div>
+    <div id="aboutContent">
+        <p class="aboutText">伴随着全国信息化进程的不断推进，以GIS为基础的动态标绘、资源部署、情报展示、应急指挥等可视化动态图形展示在应急、军事、海洋、地震、民政等行业得到越来越多的应用。标绘已经成为一种新的数据表达方式。</p>
+        <p class="aboutText">plot4ol3是GISpace动态标绘的OpenLayers3版本，旨在为基于开源GIS技术的项目提供标绘API（<a href="http://7xlbfq.com1.z0.glb.clouddn.com/plot4flex/index.html">ArcGIS Flex版本</a>）。当前版本实现了常用符号的绘制，下一版本将实现符号编辑、序列化和反序列化。</p>
+        <p class="aboutText">欢迎使用和反馈，开发者：@平凡的世界 （QQ：21587252）</p>
+    </div>
+</div>
+<div id="proparea" style="display: none;">
+    <label>边线宽度：<input id="StrokeWidth" value="2" style="width: 50px;" type="text"></label><br/>
+    <label>边线颜色：<input id="StrokeColor" style="width: 50px;" type="color"></label><br/>
+    <label>填充颜色：<input id="Fill" style="width: 50px;" type="color"></label><br/>
+    <!--<div id="delete-wrapper">-->
+        <!--<div id="btn-sure">删 除</div>-->
+        <!--<div id="btn-delete">删 除</div>-->
+    <!--</div>-->
+</div>
+<div id="propinput" style="display: none;">
+    <label>字体大小：<input id="fontSize" value="12" style="width: 50px;" type="text"></label><br/>
+    <label>字体颜色：<input id="fontColor" style="width: 50px;" type="color"></label><br/>
+    边框：
+    <select id="outline">
+        <option value="1px solid #000">有</option>
+        <option value="none">无</option>
+    </select>
+</div>
+<form id="drawForm" target="_blank" method="post" action="http://192.168.0.110:82/h5draw/saveDraw.php">
+   <input type="text" name="img" id="imgUrl"/>
+</form>
+
+<script src="http://cdn.bootcss.com/html2canvas/0.5.0-beta4/html2canvas.js"></script>
+<script src="js/ol-debug.js"></script>
+<script src="js/p-ol3.debug.js"></script>
+<script src="http://lib.sinaapp.com/js/jquery/1.9.1/jquery-1.9.1.min.js"></script>
+<script src="js/draggabilly.pkgd.min.js"></script>
+<script src="layer/layer.js"></script>
+<script src="js/jquery.Jcrop.js"></script>
+<script src="js/app.js"></script>
+</body>
+</html>
